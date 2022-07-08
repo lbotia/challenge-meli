@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  mysqldb:
+    container_name: mysqldb
+    platform: linux/x86_64
+    build:
+      context: .
+      dockerfile: ./docker-db/Dockerfile
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: "meli_pws"
+      MYSQL_DATABASE : "bd_meli"
+      MYSQL_USER: "userbd"
+      MYSQL_PASSWORD: "userpwd"
+    volumes:
+      - ./docker-db/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+      - ./docker-db/schemas:/var/lib/mysql:rw
+    networks:
+      mysql_network:
+        aliases:
+          - mysql_host
+#  app:
+#    container_name: app
+#    depends_on:
+#      - mysqldb
+#    links:
+#      - mysqldb
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - 8080:8080
+#    restart: always
+#    networks:
+#      mysql_network:
+#        aliases:
+#          - app_host
+
+volumes:
+  schemas: {}
+networks:
+  mysql_network:
+    name: mysql_net
+    driver: bridge
