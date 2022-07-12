@@ -1,5 +1,7 @@
 package com.challengemeli.challengemeli.ip.controller;
 
+import com.challengemeli.challengemeli.ip.models.IpResponse;
+import com.challengemeli.challengemeli.ip.services.ipInterface;
 import com.challengemeli.challengemeli.ip.services.ipServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,16 +16,13 @@ import java.util.regex.Pattern;
 public class ipController {
 
     @Autowired
-    private ipServices ipServices;
+    private ipInterface ipInterface;
 
     @GetMapping(value = "{ip}")
-    public String searchIp(@PathVariable String ip){
+   public ResponseEntity<IpResponse> searchIp(@PathVariable String ip){
 
-        boolean valid = ipServices.validateIp(ip);
+        return ipInterface.consultarIp(ip);
 
-        String resp =  valid?"valida":"invalida";
-
-      return  resp;
     }
 
 

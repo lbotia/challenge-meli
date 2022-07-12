@@ -2,11 +2,13 @@ package com.challengemeli.challengemeli;
 
 import com.challengemeli.challengemeli.ip.entity.IpInfoEntity;
 import com.challengemeli.challengemeli.ip.models.CountryResponse;
+import com.challengemeli.challengemeli.ip.models.IpResponse;
 import com.challengemeli.challengemeli.ip.repositories.IpInfoRepository;
 import com.challengemeli.challengemeli.ip.services.ipServices;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 
 import java.util.Optional;
@@ -39,8 +41,20 @@ class ChallengeMeliApplicationTests {
 	void testResponseServiceApiCountry(){
 
 		String ip = "186.31.180.195";
-		Optional<CountryResponse> optionalFixerResponse = ipServices.getCountryIpData(ip);
-		Assert.isTrue(optionalFixerResponse.isPresent(), "Api Fixer exitosa");
+		Optional<CountryResponse> optionalCountryResponse = ipServices.getCountryIpData(ip);
+		Assert.isTrue(optionalCountryResponse.isPresent(), "Api ip exitosa");
+
+	}
+
+
+	@Test
+	void requestIp(){
+		String ip = "186.31.180.195";
+		ResponseEntity<IpResponse> ipResponseResponseEntity = ipServices.consultarIp("186.84.88.223");
+
+		Assert.isTrue(ipResponseResponseEntity.getBody() != null, "consulta e insercion exitosa");
+
+
 
 	}
 
