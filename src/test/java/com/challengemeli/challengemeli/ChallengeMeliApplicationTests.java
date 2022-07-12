@@ -50,12 +50,22 @@ class ChallengeMeliApplicationTests {
 	@Test
 	void requestIp(){
 		String ip = "186.31.180.195";
-		ResponseEntity<IpResponse> ipResponseResponseEntity = ipServices.consultarIp("186.84.88.223");
+		ResponseEntity<IpResponse> ipResponseResponseEntity = ipServices.consultarIp(ip);
 
 		Assert.isTrue(ipResponseResponseEntity.getBody() != null, "consulta e insercion exitosa");
 
 
 
+	}
+
+	@Test
+	void consultarIpBD(){
+
+		String ip = "186.84.88.223";
+
+		Optional<IpInfoEntity> optionalIpInfoEntity =  ipInfoRepository.findById(ip);
+
+		Assert.isTrue(optionalIpInfoEntity.isPresent(), "Consulta en bd");
 	}
 
 

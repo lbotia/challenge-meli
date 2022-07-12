@@ -39,6 +39,9 @@ public class ipServices implements ipInterface{
     @Override
     public ResponseEntity consultarIp(String ipConsultada) {
 
+
+        Optional<IpInfoEntity> optionalIpInfoEntity = ipInfoRepository.findById(ipConsultada);
+
         Optional<CountryResponse> optionalCountryResponse = getCountryIpData(ipConsultada);
 
         if (!optionalCountryResponse.isPresent()){
