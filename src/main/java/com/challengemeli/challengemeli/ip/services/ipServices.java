@@ -18,10 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
@@ -55,12 +53,36 @@ public class ipServices implements ipInterface{
         Optional<IpInfoEntity> optionalIpInfoEntity = ipInfoRepository.findById(ipConsultada);
 
         if (optionalIpInfoEntity.isPresent()) {
-            return new ResponseEntity<>(
-                    new GenericResponse(HttpStatus.CONFLICT.name(),"ip ya existe en la bd."), HttpStatus.CONFLICT);
+            //actualizar si la trm si el dia de consulta es diferente a el dia actual
 
+            IpInfoEntity ipInfoEntity = optionalIpInfoEntity.get();
+
+            boolean dateDBisToday = validateDate(ipInfoEntity.getTrmDate());
+
+            if(!dateDBisToday){
+
+                Optional<Double> optionalTrm = getTRMByCurrencyCode(ipInfoEntity.getLocalMoney());
+
+                if(!optionalTrm.isPresent()){
+                    return new ResponseEntity<>(
+                            new GenericResponse(HttpStatus.CONFLICT.name(),"Error consultado TRM."), HttpStatus.CONFLICT);
+
+                }
+
+                ipInfoEntity.setTrm(optionalTrm.get());
+                ipInfoEntity.setTrmDate(new Date());
+                ipInfoRepository.save(ipInfoEntity);
+
+            }
+
+            Optional<IpResponse> optionalIPResponse = parseIPInfoToIPResponse(optionalIpInfoEntity.get());
+
+            if(optionalIPResponse.isPresent()){
+                return new ResponseEntity<>(optionalIPResponse.get(),HttpStatus.OK);
+            }
 
         }
-            Optional<CountryResponse> optionalCountryResponse = getCountryIpData(ipConsultada);
+        Optional<CountryResponse> optionalCountryResponse = getCountryIpData(ipConsultada);
 
         if (!optionalCountryResponse.isPresent()){
             return new ResponseEntity<>(
@@ -68,16 +90,53 @@ public class ipServices implements ipInterface{
 
         }
 
+
         IpInfoEntity ipInfoEntity = new IpInfoEntity();
         ipInfoEntity.setIp(ipConsultada);
+/*
+        optionalCountryResponse.ifPresent( countryResponse -> {
+            ipInfoEntity.setCountryName(countryResponse.getCountryName());
+        } );
+*/
 
         CountryResponse countryResponse = optionalCountryResponse.get();
         ipInfoEntity.setCountryName(countryResponse.getCountryName());
         ipInfoEntity.setCodeIso(countryResponse.getCountryCode());
 
+        Optional<String> optionalLocalMoney = getCurrencyData(countryResponse.getCountryCode());
+
+        if(!optionalLocalMoney.isPresent()){
+
+            return new ResponseEntity<>(
+                    new GenericResponse(HttpStatus.CONFLICT.name(),"Error consultado moneda local."), HttpStatus.CONFLICT);
+
+        }
+
+        ipInfoEntity.setLocalMoney(optionalLocalMoney.get());
+
+        Optional<Double> optionalTrm = getTRMByCurrencyCode(optionalLocalMoney.get());
+
+        if(!optionalTrm.isPresent()){
+            return new ResponseEntity<>(
+                    new GenericResponse(HttpStatus.CONFLICT.name(),"Error consultado TRM."), HttpStatus.CONFLICT);
+
+        }
+
+        ipInfoEntity.setTrm(optionalTrm.get());
+
         ipInfoRepository.save(ipInfoEntity);
 
-        return null;
+        Optional<IpResponse> optionalIPResponse = parseIPInfoToIPResponse(ipInfoEntity);
+
+        if(optionalIPResponse.isPresent()){
+
+            return new ResponseEntity<>(optionalIPResponse.get(),HttpStatus.OK);
+
+        }
+
+        return new ResponseEntity<>(
+                new GenericResponse(HttpStatus.CONFLICT.name(),"No fue posible consultar la IP."), HttpStatus.CONFLICT);
+
     }
 
     @Override
@@ -157,6 +216,35 @@ public class ipServices implements ipInterface{
 
         return Optional.empty();
     }
+    @Override
+    public Optional<IpResponse> parseIPInfoToIPResponse(IpInfoEntity ipInfoEntity){
 
+        if(ipInfoEntity == null){
+            return Optional.empty();
+        }
+
+        IpResponse ipResponse = new IpResponse();
+
+        ipResponse.setNameCountry(ipInfoEntity.getCountryName());
+        ipResponse.setCodeISO(ipInfoEntity.getCodeIso());
+        ipResponse.setLocalMoney(ipInfoEntity.getLocalMoney());
+        ipResponse.setTrm(ipInfoEntity.getTrm());
+
+        return Optional.of(ipResponse);
+
+    }
+
+    @Override
+    public Boolean validateDate(Date dateBd ){
+
+        Date dateToday = new Date();
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+        String dtBd = formatter.format(dateBd);
+        String dtHoy = formatter.format(dateToday);
+
+        return dtBd.equals(dtHoy);
+    }
 
 }

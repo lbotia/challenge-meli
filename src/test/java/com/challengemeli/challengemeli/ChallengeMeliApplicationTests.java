@@ -84,5 +84,13 @@ class ChallengeMeliApplicationTests {
 		Optional<FixerResponse> optionalFixerResponse = ipServices.getFixerData();
 		Assert.isTrue(optionalFixerResponse.isPresent(), "Api Fixer exitosa");
 	}
+	@Test
+	void testGetTRMByCurrencyCode(){
+		String currencyCode = "COP";
 
+		Optional<Double> optTRMValue = ipServices.getTRMByCurrencyCode(currencyCode);
+
+		Assert.isTrue(optTRMValue.isPresent(), "Error no se encuentra el valor para el TRM");
+
+	}
 }
