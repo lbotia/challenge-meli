@@ -1,6 +1,7 @@
 package com.challengemeli.challengemeli.ip.services;
 
 import com.challengemeli.challengemeli.ip.entity.IpInfoEntity;
+import com.challengemeli.challengemeli.ip.models.BlackListResponse;
 import com.challengemeli.challengemeli.ip.models.CountryResponse;
 import com.challengemeli.challengemeli.ip.models.FixerResponse;
 import com.challengemeli.challengemeli.ip.models.IpResponse;
@@ -26,4 +27,6 @@ public interface ipInterface {
     Optional<IpResponse> parseIPInfoToIPResponse(IpInfoEntity ipInfoEntity);
 
     Boolean validateDate(Date dateBd );
+
+    BlackListResponse cosultIpBlacList(String ip);
 }

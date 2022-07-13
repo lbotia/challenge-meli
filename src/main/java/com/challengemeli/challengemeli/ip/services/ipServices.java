@@ -2,10 +2,7 @@ package com.challengemeli.challengemeli.ip.services;
 
 import com.challengemeli.challengemeli.ip.entity.BlackListEntity;
 import com.challengemeli.challengemeli.ip.entity.IpInfoEntity;
-import com.challengemeli.challengemeli.ip.models.CountryResponse;
-import com.challengemeli.challengemeli.ip.models.FixerResponse;
-import com.challengemeli.challengemeli.ip.models.GenericResponse;
-import com.challengemeli.challengemeli.ip.models.IpResponse;
+import com.challengemeli.challengemeli.ip.models.*;
 import com.challengemeli.challengemeli.ip.models.currency.CurrencyData;
 import com.challengemeli.challengemeli.ip.repositories.BlackListRepository;
 import com.challengemeli.challengemeli.ip.repositories.IpInfoRepository;
@@ -259,5 +256,32 @@ public class ipServices implements ipInterface{
 
         return dtBd.equals(dtHoy);
     }
+
+    @Override
+    public BlackListResponse cosultIpBlacList(String ip) {
+
+        BlackListResponse blackListResponse = new BlackListResponse();
+
+        Optional<BlackListEntity> optionalBlackListEntity = blackListRepository.findById(ip);
+
+        if(optionalBlackListEntity.isPresent()){
+
+            blackListResponse.setStatus("YA SE ENCUENTRA MARCADO.");
+            return blackListResponse;
+        }
+
+        BlackListEntity blackListEntity = new BlackListEntity();
+
+        blackListEntity.setIp(ip);
+        blackListEntity.setBanDate(new Date());
+
+        blackListRepository.save(blackListEntity);
+
+        blackListResponse.setStatus("MARCADO CON EXITO.");
+        return blackListResponse;
+
+    }
+
+
 
 }
