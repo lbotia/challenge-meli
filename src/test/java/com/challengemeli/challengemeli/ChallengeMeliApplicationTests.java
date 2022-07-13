@@ -68,5 +68,14 @@ class ChallengeMeliApplicationTests {
 		Assert.isTrue(optionalIpInfoEntity.isPresent(), "Consulta en bd");
 	}
 
+	@Test
+	void testGetApiCurrency(){
+		String codeIso = "col";
+		String currencyCodeCol = "COP";
+		Optional<String> optionalCurrencyResponse = ipServices.getCurrencyData(codeIso);
+		Assert.isTrue(optionalCurrencyResponse.isPresent(),"Currency Present");
+		Assert.isTrue(optionalCurrencyResponse.get().equals(currencyCodeCol), "Match currency");
+
+	}
 
 }

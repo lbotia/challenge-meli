@@ -12,6 +12,7 @@ public interface ipInterface {
 
     ResponseEntity<IpResponse> consultarIp(String ipConsultada);
 
-    public Optional<CountryResponse> getCountryIpData(String ip);
+    Optional<CountryResponse> getCountryIpData(String ip);
 
+    Optional<String> getCurrencyData(String codeIso);
 }
