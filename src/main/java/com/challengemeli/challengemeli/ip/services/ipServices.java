@@ -1,11 +1,13 @@
 package com.challengemeli.challengemeli.ip.services;
 
+import com.challengemeli.challengemeli.ip.entity.BlackListEntity;
 import com.challengemeli.challengemeli.ip.entity.IpInfoEntity;
 import com.challengemeli.challengemeli.ip.models.CountryResponse;
 import com.challengemeli.challengemeli.ip.models.FixerResponse;
 import com.challengemeli.challengemeli.ip.models.GenericResponse;
 import com.challengemeli.challengemeli.ip.models.IpResponse;
 import com.challengemeli.challengemeli.ip.models.currency.CurrencyData;
+import com.challengemeli.challengemeli.ip.repositories.BlackListRepository;
 import com.challengemeli.challengemeli.ip.repositories.IpInfoRepository;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -27,6 +29,9 @@ public class ipServices implements ipInterface{
 
     @Autowired
     private IpInfoRepository ipInfoRepository;
+
+    @Autowired
+    private BlackListRepository blackListRepository;
     @Autowired
     private RestTemplate restTemplate;
     private Logger LOG = LoggerFactory.getLogger(ipServices.class);
@@ -49,6 +54,14 @@ public class ipServices implements ipInterface{
     @Override
     public ResponseEntity consultarIp(String ipConsultada) {
 
+        Optional<BlackListEntity> optionalBlackListEntity = blackListRepository.findById(ipConsultada);
+
+        if(optionalBlackListEntity.isPresent()){
+
+            return new ResponseEntity<>(
+                    new GenericResponse(HttpStatus.CONFLICT.name(),"IP se encuentra en lista negra."), HttpStatus.CONFLICT);
+
+        }
 
         Optional<IpInfoEntity> optionalIpInfoEntity = ipInfoRepository.findById(ipConsultada);
 
