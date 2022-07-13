@@ -29,7 +29,6 @@ public class ipController {
 
     }
 
-    @PostMapping("blackList/")
     @GetMapping("blackList/{ip}")
     public ResponseEntity<BlackListResponse> markedBlackList(@PathVariable String ip){
 

@@ -1,10 +1,12 @@
 package com.challengemeli.challengemeli;
 
 import com.challengemeli.challengemeli.ip.entity.IpInfoEntity;
+import com.challengemeli.challengemeli.ip.models.BlackListResponse;
 import com.challengemeli.challengemeli.ip.models.CountryResponse;
 import com.challengemeli.challengemeli.ip.models.FixerResponse;
 import com.challengemeli.challengemeli.ip.models.IpResponse;
 import com.challengemeli.challengemeli.ip.repositories.IpInfoRepository;
+import com.challengemeli.challengemeli.ip.services.ipInterface;
 import com.challengemeli.challengemeli.ip.services.ipServices;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,23 +14,56 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 
 @SpringBootTest
 class ChallengeMeliApplicationTests {
 
-
 	@Autowired
-	private ipServices ipServices;
+	private ipInterface countryIpInterface;
 
 	@Autowired
 	private IpInfoRepository ipInfoRepository;
+
 	@Test
-	void validateIp() {
+	void contextLoads() {
+	}
 
-		boolean validate = ipServices.validateIp("12.12.12.12");
+	@Test
+	void testGetApiIPData(){
+		String ip = "186.31.180.195";
+		Optional<CountryResponse> optionalCountryResponse =  countryIpInterface.getCountryIpData(ip);
+		Assert.isTrue(optionalCountryResponse.isPresent(),"Api exitosa");
 
-		Assert.isTrue(validate,"ip validada");
+	}
+
+	@Test
+	void testGetFixerData(){
+		Optional<FixerResponse> optionalFixerResponse = countryIpInterface.getFixerData();
+		Assert.isTrue(optionalFixerResponse.isPresent(), "Api Fixer exitosa");
+	}
+
+	@Test
+	void testGetTRMByCurrencyCode(){
+		String currencyCode = "COP";
+
+		Optional<Double> optTRMValue = countryIpInterface.getTRMByCurrencyCode(currencyCode);
+
+		Assert.isTrue(optTRMValue.isPresent(), "Error no se encuentra el valor para el TRM");
+
+	}
+
+	@Test
+	void testGetApiCurrency(){
+		String codeIso = "col";
+		String currencyCodeCol = "COP";
+		Optional<String> optionalCurrencyResponse = countryIpInterface.getCurrencyData(codeIso);
+		Assert.isTrue(optionalCurrencyResponse.isPresent(),"Currency Present");
+		Assert.isTrue(optionalCurrencyResponse.get().equals(currencyCodeCol), "Match currency");
+
 	}
 
 	@Test
@@ -39,58 +74,34 @@ class ChallengeMeliApplicationTests {
 	}
 
 	@Test
-	void testResponseServiceApiCountry(){
+	void testConsultBlackList(){
 
-		String ip = "186.31.180.195";
-		Optional<CountryResponse> optionalCountryResponse = ipServices.getCountryIpData(ip);
-		Assert.isTrue(optionalCountryResponse.isPresent(), "Api ip exitosa");
+		BlackListResponse markedBlackList = countryIpInterface.cosultIpBlacList("186.84.88.225");
+
+		Assert.isTrue(markedBlackList != null, "Error consultando blackList");
 
 	}
 
-
 	@Test
-	void requestIp(){
-		String ip = "186.31.180.195";
-		ResponseEntity<IpResponse> ipResponseResponseEntity = ipServices.consultarIp(ip);
+	void testConsulterEIInsert(){
+
+		ResponseEntity<IpResponse> ipResponseResponseEntity = countryIpInterface.consultarIp("186.84.88.223");
 
 		Assert.isTrue(ipResponseResponseEntity.getBody() != null, "consulta e insercion exitosa");
 
-
-
 	}
 
 	@Test
-	void consultarIpBD(){
+	void testValidateDate() throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-		String ip = "186.84.88.223";
+		String  fechaStr = "26/02/2022";
+		Date date = sdf.parse(fechaStr);
 
-		Optional<IpInfoEntity> optionalIpInfoEntity =  ipInfoRepository.findById(ip);
+		Boolean resp = countryIpInterface.validateDate(date);
 
-		Assert.isTrue(optionalIpInfoEntity.isPresent(), "Consulta en bd");
-	}
-
-	@Test
-	void testGetApiCurrency(){
-		String codeIso = "col";
-		String currencyCodeCol = "COP";
-		Optional<String> optionalCurrencyResponse = ipServices.getCurrencyData(codeIso);
-		Assert.isTrue(optionalCurrencyResponse.isPresent(),"Currency Present");
-		Assert.isTrue(optionalCurrencyResponse.get().equals(currencyCodeCol), "Match currency");
+		Assert.isTrue(resp != null,"Error Fecha");
 
 	}
 
-	@Test
-	void testGetFixerData(){
-		Optional<FixerResponse> optionalFixerResponse = ipServices.getFixerData();
-		Assert.isTrue(optionalFixerResponse.isPresent(), "Api Fixer exitosa");
-	}
-	@Test
-	void testGetTRMByCurrencyCode(){
-		String currencyCode = "COP";
-
-		Optional<Double> optTRMValue = ipServices.getTRMByCurrencyCode(currencyCode);
-
-		Assert.isTrue(optTRMValue.isPresent(), "Error no se encuentra el valor para el TRM");
-
-	}
 }
