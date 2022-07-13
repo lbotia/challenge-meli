@@ -2,6 +2,7 @@ package com.challengemeli.challengemeli.ip.services;
 
 import com.challengemeli.challengemeli.ip.entity.IpInfoEntity;
 import com.challengemeli.challengemeli.ip.models.CountryResponse;
+import com.challengemeli.challengemeli.ip.models.FixerResponse;
 import com.challengemeli.challengemeli.ip.models.GenericResponse;
 import com.challengemeli.challengemeli.ip.models.IpResponse;
 import com.challengemeli.challengemeli.ip.models.currency.CurrencyData;
@@ -39,6 +40,10 @@ public class ipServices implements ipInterface{
     private final String ACCESSKEY_API = "?access_key=7dd01e18f27140259353176e5160de52";
 
     private final String URL_API_COUNTRY_IP = "http://api.ipapi.com/";
+
+    private final String ACCESSKEY_FIXER = "f8d3fb0cf6095cf93388560effefaa27";
+    private final String URL_API_COUNTRY_FIXER = "http://data.fixer.io/api/latest?access_key="+ACCESSKEY_FIXER;
+
     public boolean validateIp(String ip){
             return PATTERN.matcher(ip).matches();
     }
@@ -112,5 +117,46 @@ public class ipServices implements ipInterface{
         return currencyMap.keySet().stream().findFirst();
 
     }
+
+    @Override
+    public Optional<Double> getTRMByCurrencyCode(String currencyCode) {
+
+        if (currencyCode == null || currencyCode.isEmpty()){
+            return Optional.empty();
+        }
+
+        Optional<FixerResponse> optionalFixerResponse = getFixerData();
+
+        if (!optionalFixerResponse.isPresent()){
+            return Optional.empty();
+        }
+
+        FixerResponse fixerResponse = optionalFixerResponse.get();
+
+        Optional<Map.Entry<String, Double>> optCurrencyCode = fixerResponse
+                .getRates()
+                .entrySet()
+                .stream()
+                .filter( rate -> rate.getKey().equals(currencyCode) )
+                .findFirst();
+
+        if (!optCurrencyCode.isPresent()){
+            return Optional.empty();
+        }
+
+        return Optional.of(optCurrencyCode.get().getValue());
+    }
+    @Override
+    public Optional<FixerResponse> getFixerData(){
+
+        ResponseEntity<FixerResponse> response = restTemplate.getForEntity(URL_API_COUNTRY_FIXER, FixerResponse.class);
+
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null){
+            return Optional.of(response.getBody());
+        }
+
+        return Optional.empty();
+    }
+
 
 }

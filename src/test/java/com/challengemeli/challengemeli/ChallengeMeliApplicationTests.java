@@ -2,6 +2,7 @@ package com.challengemeli.challengemeli;
 
 import com.challengemeli.challengemeli.ip.entity.IpInfoEntity;
 import com.challengemeli.challengemeli.ip.models.CountryResponse;
+import com.challengemeli.challengemeli.ip.models.FixerResponse;
 import com.challengemeli.challengemeli.ip.models.IpResponse;
 import com.challengemeli.challengemeli.ip.repositories.IpInfoRepository;
 import com.challengemeli.challengemeli.ip.services.ipServices;
@@ -76,6 +77,12 @@ class ChallengeMeliApplicationTests {
 		Assert.isTrue(optionalCurrencyResponse.isPresent(),"Currency Present");
 		Assert.isTrue(optionalCurrencyResponse.get().equals(currencyCodeCol), "Match currency");
 
+	}
+
+	@Test
+	void testGetFixerData(){
+		Optional<FixerResponse> optionalFixerResponse = ipServices.getFixerData();
+		Assert.isTrue(optionalFixerResponse.isPresent(), "Api Fixer exitosa");
 	}
 
 }
