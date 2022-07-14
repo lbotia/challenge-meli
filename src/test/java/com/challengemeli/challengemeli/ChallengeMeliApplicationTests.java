@@ -31,7 +31,13 @@ class ChallengeMeliApplicationTests {
 	@Test
 	void contextLoads() {
 	}
+	@Test
+	void validateIp() {
 
+		boolean validate = countryIpInterface.validateIp("12.12.12.12");
+
+		Assert.isTrue(validate,"ip validada");
+	}
 	@Test
 	void testGetApiIPData(){
 		String ip = "186.31.180.195";
@@ -76,7 +82,7 @@ class ChallengeMeliApplicationTests {
 	@Test
 	void testConsultBlackList(){
 
-		BlackListResponse markedBlackList = countryIpInterface.cosultIpBlacList("186.84.88.225");
+		BlackListResponse markedBlackList = countryIpInterface.cosultIpBlackList("186.84.88.225");
 
 		Assert.isTrue(markedBlackList != null, "Error consultando blackList");
 

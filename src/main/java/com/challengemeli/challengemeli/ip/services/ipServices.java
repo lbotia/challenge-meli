@@ -43,11 +43,23 @@ public class ipServices implements ipInterface{
 
     private final String ACCESSKEY_FIXER = "f8d3fb0cf6095cf93388560effefaa27";
     private final String URL_API_COUNTRY_FIXER = "http://data.fixer.io/api/latest?access_key="+ACCESSKEY_FIXER;
-
+    /**
+     * metodo que valida apartir de un string si es una ip
+     * esto con una expresion regular
+     * @param ip
+     * @return
+     */
     public boolean validateIp(String ip){
             return PATTERN.matcher(ip).matches();
     }
-
+    /**
+     * metodo general consulta si se encuentra en lista negra la ip
+     * consulta si la ip se encuentra en la tabla IP_INF
+     * si la encuentra trae la informacion de la bd
+     * si no consulta he inserta
+     * @param ipConsultada
+     * @return
+     */
     @Override
     public ResponseEntity consultarIp(String ipConsultada) {
 
@@ -148,7 +160,11 @@ public class ipServices implements ipInterface{
                 new GenericResponse(HttpStatus.CONFLICT.name(),"No fue posible consultar la IP."), HttpStatus.CONFLICT);
 
     }
-
+    /**
+     * Consulta la ip para traer informacion del pais por ip
+     * @param ip
+     * @return respuesta del servicio
+     */
     @Override
     public Optional<CountryResponse> getCountryIpData(String ip) {
         String uriWithIP = URL_API_COUNTRY_IP+ip+ACCESSKEY_API;
@@ -161,6 +177,11 @@ public class ipServices implements ipInterface{
         return Optional.empty();
 
     }
+    /**
+     * trae el tipo de moneda de la url consumida
+     * @param isoCountryCode
+     * @return tipo Moneda
+     */
     @Override
     public Optional<String> getCurrencyData(String isoCountryCode){
 
@@ -186,7 +207,11 @@ public class ipServices implements ipInterface{
         return currencyMap.keySet().stream().findFirst();
 
     }
-
+    /**
+     * se consulta la lista de todas las trm y se filtra por el codigo de pais
+     * @param currencyCode
+     * @return valor de la trm
+     */
     @Override
     public Optional<Double> getTRMByCurrencyCode(String currencyCode) {
 
@@ -215,6 +240,11 @@ public class ipServices implements ipInterface{
 
         return Optional.of(optCurrencyCode.get().getValue());
     }
+
+    /**
+     * consulta el servicio para traer la trm del dia
+     * @return la trm del dia
+     */
     @Override
     public Optional<FixerResponse> getFixerData(){
 
@@ -226,6 +256,12 @@ public class ipServices implements ipInterface{
 
         return Optional.empty();
     }
+    /**
+     * llena response que se va a devolver en el servicio
+     * @param ipInfoEntity
+     * @return reponse
+     */
+
     @Override
     public Optional<IpResponse> parseIPInfoToIPResponse(IpInfoEntity ipInfoEntity){
 
@@ -243,7 +279,11 @@ public class ipServices implements ipInterface{
         return Optional.of(ipResponse);
 
     }
-
+    /**
+     * valida que la fecha en la bd de la trm sea diferente a la fecha de consulta
+     * @param dateBd
+     * @return true o false
+     */
     @Override
     public Boolean validateDate(Date dateBd ){
 
@@ -256,9 +296,14 @@ public class ipServices implements ipInterface{
 
         return dtBd.equals(dtHoy);
     }
-
+    /**
+     * consulta en la bd BLACK_LIST si existe el registro
+     * si no existe lo inserta
+     * @param ip
+     * @return
+     */
     @Override
-    public BlackListResponse cosultIpBlacList(String ip) {
+    public BlackListResponse cosultIpBlackList(String ip) {
 
         BlackListResponse blackListResponse = new BlackListResponse();
 

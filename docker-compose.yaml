@@ -21,22 +21,22 @@ services:
       mysql_network:
         aliases:
           - mysql_host
-#  app:
-#    container_name: app
-#    depends_on:
-#      - mysqldb
-#    links:
-#      - mysqldb
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    ports:
-#      - 8080:8080
-#    restart: always
-#    networks:
-#      mysql_network:
-#        aliases:
-#          - app_host
+  app:
+    container_name: app
+    depends_on:
+      - mysqldb
+    links:
+      - mysqldb
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    restart: always
+    networks:
+      mysql_network:
+        aliases:
+          - app_host
 
 volumes:
   schemas: {}

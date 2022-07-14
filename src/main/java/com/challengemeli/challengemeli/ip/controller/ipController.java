@@ -32,7 +32,7 @@ public class ipController {
     @GetMapping("blackList/{ip}")
     public ResponseEntity<BlackListResponse> markedBlackList(@PathVariable String ip){
 
-        BlackListResponse blackListResponse = ipInterface.cosultIpBlacList(ip);
+        BlackListResponse blackListResponse = ipInterface.cosultIpBlackList(ip);
 
         return new ResponseEntity<>(blackListResponse, HttpStatus.OK);
 

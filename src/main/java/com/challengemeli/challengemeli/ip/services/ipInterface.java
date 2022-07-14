@@ -28,5 +28,5 @@ public interface ipInterface {
 
     Boolean validateDate(Date dateBd );
 
-    BlackListResponse cosultIpBlacList(String ip);
+    BlackListResponse cosultIpBlackList(String ip);
 }
