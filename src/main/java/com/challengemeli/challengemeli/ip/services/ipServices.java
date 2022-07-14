@@ -63,6 +63,13 @@ public class ipServices implements ipInterface{
     @Override
     public ResponseEntity consultarIp(String ipConsultada) {
 
+        boolean validateIp = validateIp(ipConsultada);
+
+        if(!validateIp) {
+            return new ResponseEntity<>(
+                    new GenericResponse(HttpStatus.CONFLICT.name(),"IP Consultada no valida."), HttpStatus.CONFLICT);
+        }
+
         Optional<BlackListEntity> optionalBlackListEntity = blackListRepository.findById(ipConsultada);
 
         if(optionalBlackListEntity.isPresent()){
