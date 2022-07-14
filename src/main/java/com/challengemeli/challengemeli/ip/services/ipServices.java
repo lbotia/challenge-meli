@@ -67,7 +67,7 @@ public class ipServices implements ipInterface{
 
         if(!validateIp) {
             return new ResponseEntity<>(
-                    new GenericResponse(HttpStatus.CONFLICT.name(),"IIP CONSULTADA NO VALIDA."), HttpStatus.CONFLICT);
+                    new GenericResponse(HttpStatus.CONFLICT.name(),"IP CONSULTADA NO VALIDA."), HttpStatus.CONFLICT);
         }
 
         Optional<BlackListEntity> optionalBlackListEntity = blackListRepository.findById(ipConsultada);

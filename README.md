@@ -12,10 +12,14 @@
 
 ## Como ejecutar con Docker-compose
 
-1. Ejecutar
+1. Compilar y Ejecutar
    `docker-compose up --build`
 
+2. Compilar (Opcional)
+   `docker-compose --build`
 
+3. Ejecutar (Opcional)
+   `docker-compose up`
 
 # Consumo de APIs.
 ### Servicio Consultar IP
