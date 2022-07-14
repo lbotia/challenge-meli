@@ -57,6 +57,15 @@
 #### Response
 ```json
 {
-    "status":"YA SE ENCUENTRA MARCADO."
+    "status": "CONFLICT",
+    "message":"YA SE ENCUENTRA MARCADO."
+}
+```
+- Si el formato de IP no corresponde 
+#### Response
+```json
+{
+   "status": "CONFLICT",
+    "message":"IP CONSULTADA NO VALIDA."
 }
 ```
